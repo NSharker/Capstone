@@ -5,6 +5,10 @@
 """
 import csv
 
+import geopy
+
+from geopy.geocoders import Nominatim
+
 '''
 def complaintDataParser(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
@@ -41,6 +45,22 @@ def complaintDataParser(inputFileName, outputFileName):
                
 '''
 
+def longLatToZipCode(latitude, longitude, minZip = 10001, maxZip = 11697):
+    """Returns the string of the zip code located at the latitude and longitude
+        latitude = the latitude point
+        longitude = the longitude point
+        minZip = the minimum value that the zipcode can be, 10001 in NYC
+        maxZip = the maximum value the zipcode can be, 11697 in NYC  
+    """
+    geolocator = Nominatim()
+    latLongString = latitude + "," + longitude
+    location = geolocator.reverse(latLongString)
+    addressString = location.address
+    listOfItems = addressString.split(", ")
+    for i in listOfItems:
+        if i.isdigit() and int(i) >= minZip and int(i) <= maxZip:
+            return i
+'''
 def complaintDataParser(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
         with open(outputFileName, 'w') as writecsvfile:
@@ -51,6 +71,19 @@ def complaintDataParser(inputFileName, outputFileName):
                 outRow = [row['RPT_DT'], row['LAW_CAT_CD'], row['Latitude'], row['Longitude']]
                 outputCSV.writerow(outRow)
 
+'''
+
+def complaintDataParser(inputFileName, outputFileName):
+    with open(inputFileName, 'r') as csvfile:
+        with open(outputFileName, 'w') as writecsvfile:
+            complaintData = csv.DictReader(csvfile, delimiter=',')
+            outputCSV = csv.writer(writecsvfile, delimiter=',')
+            outputCSV.writerow(['RPT_DT','LAW_CAT_CD','ZIPCODE'])
+            for row in complaintData:
+                if row['Latitude'] and row['Longitude']:
+                    zipCode = longLatToZipCode(row['Latitude'], row['Longitude'])
+                    outRow = [row['RPT_DT'], row['LAW_CAT_CD'], zipCode]
+                    outputCSV.writerow(outRow)
 
 
 '''
@@ -74,16 +107,24 @@ def taxiDataParser(inputFileName, outputFileName):
 
         
 
-#complaintDataParser("NYPD_Complaint_Data_Historic.csv","output.csv")
+complaintDataParser("NYPD_Complaint_Data_Historic.csv","output.csv")
 
 
-taxiDataParser("yellow_tripdata_2010-01.csv", "yellow2010output.csv")
+#taxiDataParser("yellow_tripdata_2010-01.csv", "yellow2010output.csv")
         
         
         
         
         
-        
+'''import geopy
+from geopy.geocoders import Nominatim
+geolocator = Nominatim()
+location = geolocator.geocode("175 5th Avenue NYC")
+print((location.latitude, location.longitude))
+geolocator = Nominatim()
+location = geolocator.reverse("
+location = geolocator.reverse("40.82884833,-73.91666114")
+print(location.address)'''
         
         
         
