@@ -5,9 +5,14 @@
 """
 import csv
 
-import geopy
+from geopy.distance import great_circle
+from datetime import datetime
+
+
+'''import geopy
 
 from geopy.geocoders import Nominatim
+'''
 
 '''
 def complaintDataParser(inputFileName, outputFileName):
@@ -45,6 +50,7 @@ def complaintDataParser(inputFileName, outputFileName):
                
 '''
 
+'''
 def longLatToZipCode(latitude, longitude, minZip = 10001, maxZip = 11697):
     """Returns the string of the zip code located at the latitude and longitude
         latitude = the latitude point
@@ -61,6 +67,7 @@ def longLatToZipCode(latitude, longitude, minZip = 10001, maxZip = 11697):
         if i.isdigit() and int(i) >= minZip and int(i) <= maxZip:
             return i
 '''
+'''
 def complaintDataParser(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
         with open(outputFileName, 'w') as writecsvfile:
@@ -73,6 +80,40 @@ def complaintDataParser(inputFileName, outputFileName):
 
 '''
 
+# Finds shortest ZIP code closest to coordinates
+
+def getZip(lat, long, data):
+    coor = (lat, long)
+    short = 1000000
+    for key, value in data.items():
+        baseLat = float(value['Lat'])
+        baseLong = float(value['Long'])
+        baseCoor = (baseLat, baseLong)
+        dist = great_circle(baseCoor, coor).miles
+        if abs(dist) < short:
+            short = dist
+            zipCode = key
+    return zipCode
+
+# Opens csv with ZIP codes and coordinates
+# Returns it as a dictionary
+
+def getZipDict(inputFileName):
+    with open(inputFileName, 'r') as csvfile:
+        zipDict = csv.DictReader(csvfile, delimiter = ',')
+        result = {}
+        for row in zipDict:
+            key = row.pop('Zip')
+            result[key] = row
+        return result
+
+# Parses Taxi Data
+# Needs input file, output file, and dictionary of ZIP codes
+
+
+
+
+'''
 def complaintDataParser(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
         with open(outputFileName, 'w') as writecsvfile:
@@ -84,17 +125,26 @@ def complaintDataParser(inputFileName, outputFileName):
                     zipCode = longLatToZipCode(row['Latitude'], row['Longitude'])
                     outRow = [row['RPT_DT'], row['LAW_CAT_CD'], zipCode]
                     outputCSV.writerow(outRow)
+'''
+
+                    
+def complaintDataParser(inputFileName, outputFileName, data):
+    with open(inputFileName, 'r') as csvfile:
+        with open(outputFileName, 'w') as writecsvfile:
+            complaintData = csv.DictReader(csvfile, delimiter=',')
+            outputCSV = csv.writer(writecsvfile, delimiter=',')
+            outputCSV.writerow(['RPT_DT','LAW_CAT_CD','ZIPCODE'])
+            for row in complaintData:
+                if row['Latitude'] and row['Longitude']:
+                    long = float(row['Longitude'])
+                    lat = float(row['Latitude'])
+                    zipCode = getZip(lat, long, data)
+                    outRow = [row['RPT_DT'], row['LAW_CAT_CD'], zipCode]
+                    outputCSV.writerow(outRow)
+
 
 
 '''
-tpep_pickup_datetime
-tpep_dropoff_datetime
-Pickup_longitude
-Pickup_latitude
-Dropoff_longitude
-Dropoff_ latitude
-Passenger_count'''
-
 def taxiDataParser(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
         with open(outputFileName, 'w') as writecsvfile:
@@ -104,28 +154,37 @@ def taxiDataParser(inputFileName, outputFileName):
             for row in complaintData:
                 outRow = [row['pickup_datetime'], row['dropoff_datetime'], row['pickup_longitude'], row['pickup_latitude'], row['dropoff_longitude'], row['dropoff_latitude'], row['passenger_count']]
                 outputCSV.writerow(outRow)
-
+'''
         
-
-complaintDataParser("NYPD_Complaint_Data_Historic.csv","output.csv")
+zipDict = getZipDict("ny_zip_coords.csv")
+complaintDataParser("NYPD_Complaint_Data_Historic.csv","outputComplaintIden.csv", zipDict)
 
 
 #taxiDataParser("yellow_tripdata_2010-01.csv", "yellow2010output.csv")
         
-        
-        
-        
-        
-'''import geopy
-from geopy.geocoders import Nominatim
-geolocator = Nominatim()
-location = geolocator.geocode("175 5th Avenue NYC")
-print((location.latitude, location.longitude))
-geolocator = Nominatim()
-location = geolocator.reverse("
-location = geolocator.reverse("40.82884833,-73.91666114")
-print(location.address)'''
-        
+
+
+def taxiDataParser(inputFileName, outputFileName, data):
+    with open(inputFileName, 'r') as csvfile:
+        with open(outputFileName, 'w', newline = '') as outfile:
+            taxiData = csv.DictReader(csvfile, delimiter = ',')
+            outputCSV = csv.writer(outfile, delimiter = ',')
+            outputCSV.writerow(['pickup_datetime', 'dropoff_datetime', 'pickup_zipcode', 'dropoff_zipcode', 'passenger_count'])
+            count = 0
+            for row in taxiData:
+                pLong = float(row['pickup_longitude'])
+                pLat = float(row['pickup_latitude'])
+                if (pLong != 0) and (pLat != 0):
+                    dLong = float(row['dropoff_longitude'])
+                    dLat = float(row['dropoff_latitude'])
+                    shortPickZip = getZip(pLat, pLong, data)
+                    shortDropZip = getZip(dLat, dLong, data)
+                    if (shortPickZip != 0) or (shortDropZip != 0):
+                        outRow = [row['pickup_datetime'], row['dropoff_datetime'], shortPickZip, shortDropZip, row['passenger_count']]
+                        outputCSV.writerow(outRow)
+                count += 1
+                if count % 1000000 == 0:
+                    print("Processed ", count, " entries.")
         
         
         
