@@ -39,24 +39,30 @@ def taxiDataParser(inputFileName, outputFileName):
             coor_list = []
             neededInfo = []
             for row in taxiData:
-                pLong = float(row['pickup_longitude'])
-                pLat = float(row['pickup_latitude'])
-                dLong = float(row['dropoff_longitude'])
-                dLat = float(row['dropoff_latitude'])
+                pLong = row['pickup_longitude']
+                pLat = row['pickup_latitude']
+                dLong = row['dropoff_longitude']
+                dLat = row['dropoff_latitude']
+                # Skips rows that have empty entries for latitude and longitude
+                if (pLong != '') and (pLat != '') and (dLong != '') and (dLat != ''):
+                    pLong = float(pLong)
+                    pLat = float(pLat)
+                    dLong = float(dLong)
+                    dLat = float(dLat)
                 # Skips rows that have 0 for latitude and longitude
-                if (pLong != 0.0) and (pLat != 0.0) and (dLong != 0.0) and (dLat != 0.0):
-                    neededInfo.append([row['pickup_datetime'], row['passenger_count']])
-                    coor_list.append((pLat,pLong))
-                    coor_list.append((dLat,dLong))
-                    l_count += 1
-                    g_count += 1
-                    if (l_count >= batch_query_size):
-                        result = getZips(coor_list)
-                        writeRows_TDP(l_count, neededInfo, result, outputCSV)
-                        neededInfo = []
-                        coor_list = []
-                        print(" -> Processed ", l_count, " rows")
-                        l_count = 0
+                    if (pLong != 0.0) and (pLat != 0.0) and (dLong != 0.0) and (dLat != 0.0):
+                        neededInfo.append([row['pickup_datetime'], row['passenger_count']])
+                        coor_list.append((pLat,pLong))
+                        coor_list.append((dLat,dLong))
+                        l_count += 1
+                        g_count += 1
+                        if (l_count >= batch_query_size):
+                            result = getZips(coor_list)
+                            writeRows_TDP(l_count, neededInfo, result, outputCSV)
+                            neededInfo = []
+                            coor_list = []
+                            print(" -> Processed ", l_count, " rows")
+                            l_count = 0
             result = getZips(coor_list)
             writeRows_TDP(l_count, neededInfo, result,outputCSV)
             print(" -> Processed ", l_count, " rows")
