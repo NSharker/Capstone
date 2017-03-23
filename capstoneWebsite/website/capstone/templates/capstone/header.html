@@ -2,9 +2,34 @@
 <html>
 <head>
 	<title>House Hunter</title>
+	{% load staticfiles %}
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 </head>
 <body class = "body">
 	{% block content %}
 	{% endblock %}
+	<script>
+	var rangeSlider = function() {
+	  var slider = $('.range-slider'),
+		range = $('.range-slider__range'),
+		value = $('.range-slider__value');
+
+	  slider.each(function() {
+
+		value.each(function() {
+		  var value = $(this).prev().attr('value');
+		  $(this).html(value);
+		});
+
+		range.on('input', function() {
+		  $(this).next(value).html(this.value);
+		});
+	  });
+	};
+
+	rangeSlider();
+	</script>
 </body>
 </html>
