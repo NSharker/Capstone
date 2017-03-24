@@ -9,13 +9,16 @@ body {
 	
 }
 
+html, body {
+	top:0px;
+	left:0px;
+	margin:0;
+}
 #top {
 	font-size: 100px;
 	background-color:#333333;
 	color:#6AC5A9;
-	margin-left:-15px;
-	margin-top:-10px;
-	width: 101.2%;
+	height:100%;
 }
 
 #top-content {
@@ -23,15 +26,20 @@ body {
 	
 }
 #slider {
+	position:absolute;
 	width:25%;
 	background-color:#F8F9F3;
-	margin-left:-10px;
-	height:900px;
+	height:90%;
 }
 #slider-content {
 	margin-left:10px;
 }
-
+#map {
+	position:absolute;
+	margin-left:25%;
+	height:90%;
+	width:75%;
+}
 .name {
 	font-size:50px;
 }
