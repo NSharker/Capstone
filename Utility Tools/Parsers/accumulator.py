@@ -5,8 +5,8 @@ Created on Sat Mar 25 14:15:35 2017
 @author: Nishad
 """
 import csv
+import pandas as pd
 from datetime import datetime
-
             
 def taxiDataAccumulator(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
@@ -71,9 +71,12 @@ def taxiDataAccumulator(inputFileName, outputFileName):
                 pickUpPassengerNumber = 0
                 outPutCSV.writerow([date,zipCode,pickUpNumber, dropOffNumber, pickUpPassengerNumber, dropOffPassengerNumber])
             
-                
-
-
+# Cuts out day in date field and sorts by month/year. Exports to output        
+def sortComplaint(input, output):
+    df = pd.read_csv(input)
+    df['date'] = df['date'].map(lambda x: str(x)[:3] + str(x)[6:])
+    df = df.sort("date")
+    df.to_csv(output, index=False)
 
 def complaintDataAccumulator(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
@@ -192,8 +195,7 @@ def complaintDataAccumulator(inputFileName, outputFileName):
                 misdemeanorNumber = 0
                 violationNumber = violationAccumulation.pop(keyV)
                 outPutCSV.writerow([previousDateEntry, zipCode, felonyNumber, misdemeanorNumber, violationNumber])                    
-            
-                
+
             
             
                           
