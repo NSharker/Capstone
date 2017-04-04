@@ -73,6 +73,7 @@ data = combineIntoOne(accumFiles)
 
 # We have yellow and green taxi data for many months. We want to combine by summing them
 # This also sorts the rows by date and zipcode :)
+# This also makes these fields the index
 data = data.groupby(["date", "zipcode"]).sum()
 
 # The clean complaint file is expected to be in the folder this file is run from
@@ -81,14 +82,15 @@ data = data.groupby(["date", "zipcode"]).sum()
 accumulator.batchComplaint(["NYPD_Complaint_Data_HistoricClean.csv"],["complaint_sorted.csv"],["complaint_accum.csv"])
 
 # Read the accumulated   data
-# We groupby and sum for all "date", "zipcode"
+# We groupby and sum for all "date", "zipcode". 
+# This combines rows with same valies in these fields and makes these fields the index
 complaint = pd.read_csv("complaint_accum.csv")
 complaint = complaint.groupby(["date", "zipcode"]).sum()
 
 # Concatenate the complaint and taxi data
 # TODO: Concatenate Pricing Data
 all_data = pd.concat([data, complaint], axis=1)
-data.to_csv("all_data.csv")
+all_data.to_csv("all_data.csv")
 
 
 
