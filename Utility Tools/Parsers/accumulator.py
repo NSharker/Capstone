@@ -2,12 +2,29 @@
 """
 Created on Sat Mar 25 14:15:35 2017
 
-@author: Nishad
+@author: Nishad, Andres
 """
 import csv
 import pandas as pd
 from datetime import datetime
-            
+
+# two lists of filenames, INTENDED TO BE SAME LENGTH
+def batchTaxi(taxi_in, taxi_out):
+    for x, y in zip(taxi_in, taxi_out):
+        print("Accumulating... Input: ", x, " Output: ", y)
+        startTime = datetime.now()        
+        taxiDataAccumulator(x,y)
+        print(datetime.now() - startTime)        
+      
+def batchComplaint(comp_in, comp_sorted_out, comp_out):
+    for x,y,z in zip(comp_in, comp_sorted_out, comp_out):
+        print("Accumulating... Input: ", x, " Output: ", y)
+        startTime = datetime.now()
+        sortComplaint(x,y)
+        complaintDataAccumulator(y,z)
+        print(datetime.now() - startTime)        
+
+
 def taxiDataAccumulator(inputFileName, outputFileName):
     with open(inputFileName, 'r') as csvfile:
         with open(outputFileName, 'w', newline = '') as outfile:
@@ -88,7 +105,7 @@ def complaintDataAccumulator(inputFileName, outputFileName):
             violationAccumulation = {}
             firstRow = next(complaintData)
             #Use these two variables to check when we switch to a different month/year in our data
-            previousDateEntry = firstRow['date'][0:2] + "/"+ firstRow['date'][6:]
+            previousDateEntry = firstRow['date']
             currentDateEntry = previousDateEntry
             #add the data to our accumulation dictionaries based on the law_cat_cd from the first row parsed
             if firstRow['law_cat_cd'] == "FELONY":
@@ -103,8 +120,7 @@ def complaintDataAccumulator(inputFileName, outputFileName):
             outPutCSV.writerow(['date','zipcode','FELONIES', 'MISDEMEANORS', 'VIOLATIONS'])
                 
             for row in complaintData:
-                currentDateEntry = row['date'][0:2] + "/" + row['date'][6:]
-
+                currentDateEntry = row['date']
                 #if previousDateEntry not equal to currentDateEntry then we are in a new month
                 if previousDateEntry != currentDateEntry:
                     #write to the output CSV file, all our values in our dictionary
@@ -201,10 +217,10 @@ def complaintDataAccumulator(inputFileName, outputFileName):
                           
             
             
-            
+            '''
 startTime = datetime.now()        
-taxiDataAccumulator("C:/Users/Nishad/Desktop/Data/Cleaned/yellow_tripdata_2015-01Cleaned.csv","C:/Users/Nishad/Desktop/Data/Cleaned/Accumlated/yellow_tripdata_2015-01Accum.csv")
+taxiDataAccumulator()
 print(datetime.now() - startTime)        
 
             
-    
+    '''
