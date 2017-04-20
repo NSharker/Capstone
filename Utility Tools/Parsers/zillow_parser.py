@@ -6,7 +6,7 @@ Created on Sun Mar 26 11:08:43 2017
 """
 
 import pandas as pd
-
+import csv
 
 
 
@@ -43,8 +43,41 @@ def zillowParserRental(inputFileName, outputFileName):
     
 
     
+
+
+def convertZillowDate (zillowDate):
+    return zillowDate[5:] + "/" + zillowDate[:4]
+
+def convertZillowFormat (inputFileName, outputFileName):
+    """
+    converts the zillow parsed file into a format similar to our complaint and taxi data
+    output file will have three columns:
+        date,zipcode,price
+    inputFileName = the zillow file that has been ran through the parser
+    outputFileName = the name of the file that will be used to merge into our complaint/taxi data
+    will convert the dates into the format used in our complaint/taxi data files
+    """
+    df = pd.read_csv(inputFileName, sep = ',')
+    rowNumbers, columnNumbers = df.shape
+    with open(outputFileName, 'w', newline = '') as outfile:
+        outputCSV = csv.writer(outfile, delimiter = ',')
+        outputCSV.writerow(['date','zipcode','price'])
+        columnNames = df.columns.values.tolist()
+        print(df.dtypes)
+        for row in range(rowNumbers):
+            for column in range(1,columnNumbers):
+                outputCSV.writerow([df.at[row,'zipcode'],convertZillowDate(columnNames[column]),df.at[row,columnNames[column]]])
+
+
+                
+    
+
+
+    
     
 inputFileName = "--INPUT-FILE-NAME--"
 outputFileName = "--OUTPUT-FILE-NAME--"
 # zillowParserHome(inputFileName, outputFileName)
 zillowParserRental(inputFileName, outputFileName)
+
+#convertZillowFormat(inputFileName, outputFileName)
