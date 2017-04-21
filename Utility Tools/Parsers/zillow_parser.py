@@ -63,10 +63,10 @@ def convertZillowFormat (inputFileName, outputFileName):
         outputCSV = csv.writer(outfile, delimiter = ',')
         outputCSV.writerow(['date','zipcode','price'])
         columnNames = df.columns.values.tolist()
-        print(df.dtypes)
+        #print(df.dtypes)
         for row in range(rowNumbers):
             for column in range(1,columnNumbers):
-                outputCSV.writerow([df.at[row,'zipcode'],convertZillowDate(columnNames[column]),df.at[row,columnNames[column]]])
+                outputCSV.writerow([convertZillowDate(columnNames[column]),df.at[row,'zipcode'],df.at[row,columnNames[column]]])
 
 
                 
