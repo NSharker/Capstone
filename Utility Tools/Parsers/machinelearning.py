@@ -3,6 +3,13 @@
 from sklearn import preprocessing
 from sklearn import linear_model
 
+import pandas
+import matplotlib.pyplot as plt
+from sklearn.cross_validation import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
+
 # TODO: Change LabelEncoding. Need to directly convert mo/year to number so that we can query future months
 # Impliment predicting values
 # Make code more modular
@@ -90,5 +97,85 @@ if (len(features) == len(values)):
 else:
 	"SIZE_OF_FEATURES != SIZE_OF_VALUES"
 
+# Iden's Machine Learning Stuff
+# Random Forest is better than Linear Regression right now
 
+data = pandas.read_csv("/Volumes/Big Stick/Capstone Data/final_trainingdata.csv")
+# print(data.columns)
+# print(data.shape)
+
+# plt.hist(data["price"])
+# plt.show()
+
+# print(data.corr()["price"])
+# Get all the columns from the dataframe
+columns = data.columns.tolist()
+
+# Filter the columns to remove ones we don't want
+columns = [c for c in columns if c not in ["Unnamed: 0", "Unnamed: 0.1", "date", "price"]]
+
+target = "price"
+
+
+# Generate training set.  Set random state to be able to replicate results
+train = data.sample(frac=0.8, random_state=1)
+
+# Select anything not in the training set and put it in the testing set
+test = data.loc[~data.index.isin(train.index)]
+
+# Print shape
+print(data.shape)
+print(train.shape)
+print(test.shape)
+
+"""
+# Start Linear Regression
+# Initialize the model class
+model = LinearRegression()
+
+# Fit the model to the training data
+model.fit(train[columns], train[target])
+
+# Generate predictions for the test set
+predictions = model.predict(test[columns])
+
+# Compute error between test predictions and actual values
+print("MEAN SQUARED ERROR (LR): ", mean_squared_error(predictions, test[target]))
+
+print("LR COEFFICIENTS: ", model.coef_)
+
+print("ACTUAL PRICE")
+plt.hist(data["price"])
+plt.show()
+
+print("Linear Regression PRICE")
+plt.hist(predictions)
+plt.show()
+
+# End Linear Regression
+"""
+
+# Start Random Forest
+
+# Initialize the model with some parameters
+model = RandomForestRegressor(n_estimators=100, min_samples_leaf=10, random_state=1)
+
+# Fit model to data
+model.fit(train[columns], train[target])
+
+# Make predictions
+predictions = model.predict(test[columns])
+
+# Compute error
+print("MEAN SQUARED ERROR (RF): ", mean_squared_error(predictions, test[target]))
+
+print("ACTUAL PRICE")
+plt.hist(data["price"])
+plt.show()
+
+print("Random Forest PRICE")
+plt.hist(predictions)
+plt.show()
+
+# End Random Forest
 
