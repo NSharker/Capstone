@@ -1,5 +1,6 @@
 {% extends "capstone/header.html" %}
 
+{% load static %}
 {% block content %}
 <div id="top">
 	<span id = "top-content">
@@ -8,15 +9,38 @@
 </div>
 
 <div id = "slider">
+	
+	<div id = "container">
+		<form action = "">
+			<span class="checkbox switcher">
+			<span class="name"> Popularity </span>
+			<label for="test">
+				<input type="radio" id="test" value="Popularity" name="hi" checked>
+				<span><small></small></span>
+			</label>
+			</br>
+			
+			<span class="checkbox switcher">
+			<span class="name"> Complaints </span>
+			<label for="test1">
+				<input type="radio" id="test1" value="Complaints" name="hi">
+				<span><small></small></span>
+			</label>
+			</br>
+			
+			<span class="checkbox switcher">
+			<span class="name"> Housing Prices </span>
+			<label for="test2">
+				<input type="radio" id="test2" value="Housing Prices" name="hi">
+				<span><small></small></span>
+			</label>
+		</form>
+	</div>
 	<div id = "slider-content">
-	</br>
-	</br>
-		<span class="name"> Date </span>
 		<div class="range-slider">
-		  <input class="range-slider__range" type="range" value="36" min="0" max="72">
+		  <input class="range-slider__range" type="range" value="36" min="0" max="71">
 		  <span class="range-slider__value">0</span>
 		</div>
-		
 	</div>
 </div>
 <div id="map"></div>

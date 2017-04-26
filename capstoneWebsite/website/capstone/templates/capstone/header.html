@@ -2,12 +2,9 @@
 <html>
 <head>
 	<title>House Hunter</title>
-	{% load staticfiles %}
-	
+	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcfIo7u2qWM0pChurT7cnW9-D9Qi9exnk&callback=initMap" type="text/javascript"></script>
-
 	<script type = "text/javascript">
 		var zip = {% include "capstone/zip.geojson" %}
 		var styling = {% include "capstone/styles.json" %}
@@ -23,8 +20,6 @@
 				strokeWeight: 1
 			});
 		}
-		
-		
 	</script>
 </head>
 <body class = "body">
@@ -36,22 +31,22 @@
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	// Months 0-5
 	var years = ['2010', '2011', '2012', '2013', '2014', '2015'];
-	var rangeSlider = function() {
-	  var slider = $('.range-slider'),
-		range = $('.range-slider__range'),
-		value = $('.range-slider__value');
+	var rangeSlider = function(){
+		var slider = $('.range-slider'),
+			range = $('.range-slider__range'),
+			value = $('.range-slider__value');
 
-	  slider.each(function() {
+			slider.each(function(){
 
-		value.each(function() {
-		  var value = $(this).prev().attr('value');
-		  $(this).html(value);
+			value.each(function(){
+				var value = $(this).prev().attr('value');
+				$(this).html(convertToDate(value));
+			});
+
+			range.on('input', function(){
+				$(this).next(value).html(convertToDate(this.value));
+			});
 		});
-
-		range.on('input', function() {
-		  $(this).next(value).html(value);
-		});
-	  });
 	};
 	
 	function convertToDate(value) {
@@ -61,5 +56,6 @@
 	}
 	rangeSlider();
 	</script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcfIo7u2qWM0pChurT7cnW9-D9Qi9exnk&callback=initMap" type="text/javascript"></script>
 </body>
 </html>
