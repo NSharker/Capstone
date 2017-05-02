@@ -8,6 +8,7 @@
 	<script type = "text/javascript">
 		var zip = {% include "capstone/zip.geojson" %}
 		var styling = {% include "capstone/styles.json" %}
+		var map;
 		function initMap() {
 			map = new google.maps.Map(document.getElementById('map'), {
 			  center: {lat: 40.71144481104393, lng: -73.95671748925781},
@@ -16,9 +17,26 @@
 			});
 			map.data.addGeoJson(zip);
 			map.data.setStyle({
-				fillColor: '#555555',
+				fillColor: 'red',
 				strokeWeight: 1
 			});
+		}
+		function dataSwitch(dataset) {
+			//alert($("#datasets input[type='radio']:checked").val());
+			//alert(zip.features[0].properties.postalCode);
+			if (dataset == 'pop') {
+				map.data.forEach(function(feature) {
+					map.data.overrideStyle(feature, {fillColor: 'red'});
+				});
+			} else if (dataset == 'comp') {
+				map.data.forEach(function(feature) {
+					map.data.overrideStyle(feature, {fillColor: 'blue'});
+				});
+			} else if (dataset == 'price') {
+				map.data.forEach(function(feature) {
+					map.data.overrideStyle(feature, {fillColor: 'green'});
+				});
+			}
 		}
 	</script>
 </head>
