@@ -28,11 +28,6 @@ html, body {
 	margin-left:25%;
 	height:calc(100% - (108px));
 	width:75%;
-	
-}
-
-#map img {
-	max-width:none;
 }
 
 #container {
@@ -49,7 +44,7 @@ img.resize {
 	margin-right:8px;
 	width:15px;
 	height:auto;
-} 
+}
 /*sliders*/
 #slider {
 	display: inline-block;
