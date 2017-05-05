@@ -28,6 +28,12 @@ html, body {
 	margin-left:25%;
 	height:calc(100% - (108px));
 	width:75%;
+	
+}
+
+#map img {
+	max-width:none;
+	
 }
 
 #container {

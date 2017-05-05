@@ -2,20 +2,21 @@
 
 {% load static %}
 {% block content %}
+
 <div id="top">
 	<span id = "top-content">
 		House Hunter
 	</span>
+	
 </div>
 
 <div id = "slider">
-	
 	<div id = "container">
 		<form id="datasets">
 			<span class="checkbox switcher">
 			<span class="name"> Popularity </span>
 			<label for="test">
-				<input type="radio" id="test" value="Popularity" name="dataset"  onclick="dataSwitch('pop');" checked>
+				<input type="radio" id="test" value="Popularity" name="dataset"  onclick="dataSwitch('pop');">
 				<span><small></small></span>
 			</label>
 			</br>
@@ -38,9 +39,12 @@
 	</div>
 	<div id = "slider-content">
 		<div class="range-slider">
-		  <input class="range-slider__range" type="range" value="36" min="0" max="71">
+		  <input class="range-slider__range" type="range" value="0" min="0" max="71">
 		  <span class="range-slider__value">0</span>
 		</div>
+	</div>
+	<div>
+		
 	</div>
 </div>
 <div id="map"></div>
