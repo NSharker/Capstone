@@ -6,7 +6,8 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 	<script type = "text/javascript">
-		var zip = {% include "capstone/zip.geojson" %}
+		var colors = ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#006d2c','#00441b']
+		var zip = {% include "capstone/map.geojson" %}
 		var styling = {% include "capstone/styles.json" %}
 		var map;
 		function initMap() {
@@ -17,25 +18,91 @@
 			});
 			map.data.addGeoJson(zip);
 			map.data.setStyle({
-				fillColor: 'red',
+				fillColor: '#ffffff',
+				//fillOpacity: .45,
 				strokeWeight: 1
 			});
 		}
 		function dataSwitch(dataset) {
-			//alert($("#datasets input[type='radio']:checked").val());
-			//alert(zip.features[0].properties.postalCode);
+			x = {{data|safe}};
+			var color;
 			if (dataset == 'pop') {
+				avgPickups = 0;
+				count = 0;
+				for (i = 0; i < x.length; i++) {
+					if (x[i].pickups > 0) {
+						count++;
+						avgPickups += x[i].pickups;
+					}
+				}
+				avgPickups /= count;
 				map.data.forEach(function(feature) {
-					map.data.overrideStyle(feature, {fillColor: 'red'});
+					currentZip = feature.getProperty('postalCode');
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							pls = (x[i].pickups / avgPickups);
+							color = Math.floor((pls*100)/25);
+							if (color > 8) {
+								color = 8;
+							}
+							color = colors[color];
+							continue;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
 				});
 			} else if (dataset == 'comp') {
+				avgComplaints = 0;
+				count = 0;
+				for (i = 0; i < x.length; i++) {
+					complaints = x[i].FELONIES + x[i].MISDEMEANORS + x[i].VIOLATIONS;
+					if (complaints > 0) {
+						count++;
+						avgComplaints += complaints;
+					}
+				}
+				avgComplaints /= count;
 				map.data.forEach(function(feature) {
-					map.data.overrideStyle(feature, {fillColor: 'blue'});
+					currentZip = feature.getProperty('postalCode');
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							complaints = x[i].FELONIES + x[i].MISDEMEANORS + x[i].VIOLATIONS;
+							pls = (complaints / avgComplaints);
+							color = Math.floor((pls*100)/25);
+							if (color > 8) {
+								color = 8;
+							}
+							color = colors[color];
+							continue;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
 				});
 			} else if (dataset == 'price') {
+				avgPrices = 0;
+				count = 0;
+				for (i = 0; i < x.length; i++) {
+					if (x[i].price > 0) {
+						count++;
+						avgPrices += x[i].price;
+					}
+				}
+				avgPrices /= count;
 				map.data.forEach(function(feature) {
-					map.data.overrideStyle(feature, {fillColor: 'green'});
-				});
+					currentZip = feature.getProperty('postalCode');
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							pls = (x[i].price / avgPrices);
+							color = Math.floor((pls*100)/25);
+							if (color > 8) {
+								color = 8;
+							}
+							color = colors[color];
+							continue;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
+				});;
 			}
 		}
 	</script>
