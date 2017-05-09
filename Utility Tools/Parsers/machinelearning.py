@@ -123,25 +123,45 @@ def formulateZipcodeRegressions(zipcode):
 	# Retrun the regressions
 	return returnVal
 
-# TODO: Use up to date standard ( nparray similar to above ) to silence depreciation warnings
 # Predict a housing price for a given month and year based on data we have already
-def predictHousingPrice(month, year, zipcode):
+# Returns a list of the values for that month in the following format
+# [date_enc, pickups, pickup_pass, dropoffs, dropoff_pass, felonies, misdemeanors, violations, price]
+def predictHousingPrice(month, year, zipcode, pickups=None, pickup_pass=None, dropoffs=None, dropoffs_pass=None, felonies=None, misdemeanors=None, violations=None):
 	# Get regressions
 	zipcode_regressions = formulateZipcodeRegressions(zipcode)
+	option = 1
 	# If some error, back out
 	if (zipcode_regressions == None):
 		return None
 	# Encode the future date
-	query_reg = [encodeFuture(month, year)]
+	query_reg = np.array([encodeFuture(month, year)]).reshape(-1,1)
 	# Return the price prediction when using the projected values for the other Xs
-	return zipcode_regressions["prices_reg"].predict(
-		[
-			query_reg[0], 
-			zipcode_regressions["pickup_reg"].predict(query_reg),
-			zipcode_regressions["pickup_pass_reg"].predict(query_reg),
-			zipcode_regressions["dropoff_reg"].predict(query_reg),
-			zipcode_regressions["dropoff_pass_reg"].predict(query_reg),
-			zipcode_regressions["felonies_reg"].predict(query_reg),
-			zipcode_regressions["misdemeanors_reg"].predict(query_reg),
-			zipcode_regressions["violations_reg"].predict(query_reg)
-		])
+	if (pickups==None and pickup_pass==None and dropoffs==None and dropoffs_pass==None and felonies==None and misdemeanors==None and violations==None):
+		option = 0
+		predict_input = [
+				query_reg[0][0], 
+				zipcode_regressions["pickup_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["pickup_pass_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["dropoff_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["dropoff_pass_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["felonies_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["misdemeanors_reg"].predict(query_reg)[0][0],
+				zipcode_regressions["violations_reg"].predict(query_reg)[0][0]
+		]
+	else:
+		predict_input = [
+			query_reg[0][0], 
+			pickups,
+			pickup_pass,
+			dropoffs,
+			dropoffs_pass,
+			felonies,
+			misdemeanors,
+			violations
+		]
+	predict_nd = np.array(predict_input).reshape(1,-1)
+	priceVal = zipcode_regressions["prices_reg"].predict(predict_nd)[0][0]
+	predict_input.append(priceVal)
+	return predict_input
+
+
