@@ -14,27 +14,47 @@
 	<div id = "container">
 		<form id="datasets">
 			<span class="checkbox switcher">
-			<span class="name"> Popularity </span>
+			<span class="name"> Pickups </span>
 			<label for="test">
-				<input type="radio" id="test" value="Popularity" name="dataset"  onclick="dataSwitch('pop');">
+				<input type="radio" id="test" value="Pickups" name="dataset"  onclick="dataSwitch('pic');" checked>
 				<span><small></small></span>
 			</label>
 			</br>
 			
-			<span class="checkbox switcher">
-			<span class="name"> Complaints </span>
-			<label for="test1">
-				<input type="radio" id="test1" value="Complaints" name="dataset" onclick="dataSwitch('comp');">
-				<span><small></small></span>
-			</label>
-			</br>
-			
-			<span class="checkbox switcher">
-			<span class="name"> Housing Prices </span>
+			<span class="name"> Dropoffs </span>
 			<label for="test2">
-				<input type="radio" id="test2" value="Housing Prices" name="dataset" onclick="dataSwitch('price');">
+				<input type="radio" id="test2" value="Dropoffs" name="dataset"  onclick="dataSwitch('drop');">
 				<span><small></small></span>
 			</label>
+			</br>
+			
+			<span class="name"> Felonies </span>
+			<label for="test5">
+				<input type="radio" id="test5" value="Felonies" name="dataset" onclick="dataSwitch('fel');">
+				<span><small></small></span>
+			</label>
+			</br>
+			
+			<span class="name"> Misdemeanors </span>
+			<label for="test6">
+				<input type="radio" id="test6" value="Misdemeanors" name="dataset" onclick="dataSwitch('misd');">
+				<span><small></small></span>
+			</label>
+			</br>
+			
+			<span class="name"> Violations </span>
+			<label for="test7">
+				<input type="radio" id="test7" value="Violations" name="dataset"  onclick="dataSwitch('viol');">
+				<span><small></small></span>
+			</label>
+			</br>
+			<span class="name"> Housing Prices </span>
+			<label for="test8">
+				<input type="radio" id="test8" value="Prices" name="dataset"  onclick="dataSwitch('price');">
+				<span><small></small></span>
+			</label>
+			</br>
+			</span>
 		</form>
 	</div>
 	<div id = "slider-content">
@@ -44,8 +64,25 @@
 		</div>
 	</div>
 	<div>
-		
+		<form id = "stuff" method="post" onSubmit = "return createPost()")>
+			{% csrf_token %}
+			<input type="number" id="months" name="month" value = "2" min="1" max="12"/>
+			<input type="number" id="years" name="year" value = "2016" min="2016" max="2020"/>
+			<div id="results"> </div>
+			<div onclick="createPost()">Sign up</div>
+		</form>
 	</div>
 </div>
 <div id="map"></div>
+<div id="infobox">
+	<div id="sZ"></div>
+	<div id="info"> Click any of the zip codes to see data for it! </div>
+</div>
+<div id="legend">
+	<span style = 'margin-left:10px;'>low</span>
+	<span style ='display:inline-block;margin-left:60px;'>avg</span>
+	<span style='display:inline-block; margin-left:70px;'>high</span></br>
+	<div style = 'margin-left:10px' id="legendContent"></div>
+</div>
+
 {% endblock %}

@@ -9,7 +9,11 @@
 		var colors = ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#006d2c','#00441b']
 		var zip = {% include "capstone/map.geojson" %}
 		var styling = {% include "capstone/styles.json" %}
+		var datas = {{data|safe}};
 		var map;
+		var checked;
+		var selectedzC;
+		var set = false;
 		function initMap() {
 			map = new google.maps.Map(document.getElementById('map'), {
 			  center: {lat: 40.71144481104393, lng: -73.95671748925781},
@@ -19,91 +23,194 @@
 			map.data.addGeoJson(zip);
 			map.data.setStyle({
 				fillColor: '#ffffff',
-				//fillOpacity: .45,
+				fillOpacity: .5,
 				strokeWeight: 1
 			});
+			
+			map.data.addListener('click', function(event) {
+				if (set != false) {map.data.overrideStyle(set, {strokeWeight: 1})};
+ 				map.data.overrideStyle(event.feature, {strokeWeight: 3});
+				selectedzC = event.feature.getProperty('postalCode');
+				document.getElementById('sZ').textContent = selectedzC;
+				updateInfo();
+				set = event.feature;
+			});
+			
+			dataSwitch('pic');
 		}
+		
+		function updateInfo() {
+			x = datas[$('.range-slider__range').attr('value')];
+			found = false;
+			for (i = 0; i < x.length; i++) {
+				if (x[i].zipcode == selectedzC) {
+					document.getElementById('info').innerHTML = 
+						'Pickups : ' + x[i].pickups + '</br>' +
+						'Pickup Passengers : ' + x[i].pickup_passengers + '</br>' +
+						'Dropoffs : ' + x[i].dropoffs + '</br>' +
+						'Dropoff Passengers : ' + x[i].dropoff_passengers + '</br>' +
+						'Felonies : ' + x[i].FELONIES + '</br>' +
+						'Misdemeanors : ' + x[i].MISDEMEANORS + '</br>' +
+						'Violations : ' + x[i].VIOLATIONS + '</br>' +
+						'Price per square foot: ' + x[i].price;
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				document.getElementById('info').innerHTML = "No data recorded for this month";
+			}
+		}
+		
 		function dataSwitch(dataset) {
-			x = {{data|safe}};
-			var color;
-			if (dataset == 'pop') {
-				avgPickups = 0;
-				count = 0;
+			checked = dataset;
+			x = datas[$('.range-slider__range').attr('value')];
+			avg = 0;
+			count = 0;
+			if (checked == 'pic') {
 				for (i = 0; i < x.length; i++) {
 					if (x[i].pickups > 0) {
 						count++;
-						avgPickups += x[i].pickups;
+						avg += x[i].pickups + x[i].pickup_passengers;
 					}
 				}
-				avgPickups /= count;
+				avg /= count;
 				map.data.forEach(function(feature) {
 					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
 					for (i = 0; i < x.length; i++) {
 						if (currentZip == x[i].zipcode) {
-							pls = (x[i].pickups / avgPickups);
-							color = Math.floor((pls*100)/25);
-							if (color > 8) {
-								color = 8;
-							}
-							color = colors[color];
-							continue;
+							color = chooseColor(x[i].pickups + x[i].pickup_passengers, avg);
+							break;
 						}
 					}
 					map.data.overrideStyle(feature, {fillColor: color});
 				});
-			} else if (dataset == 'comp') {
-				avgComplaints = 0;
-				count = 0;
+			} else if (checked == 'drop') {
 				for (i = 0; i < x.length; i++) {
-					complaints = x[i].FELONIES + x[i].MISDEMEANORS + x[i].VIOLATIONS;
-					if (complaints > 0) {
+					if (x[i].dropoffs > 0) {
 						count++;
-						avgComplaints += complaints;
+						avg += x[i].dropoffs + x[i].dropoff_passengers;
 					}
 				}
-				avgComplaints /= count;
+				avg /= count;
 				map.data.forEach(function(feature) {
 					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
 					for (i = 0; i < x.length; i++) {
 						if (currentZip == x[i].zipcode) {
-							complaints = x[i].FELONIES + x[i].MISDEMEANORS + x[i].VIOLATIONS;
-							pls = (complaints / avgComplaints);
-							color = Math.floor((pls*100)/25);
-							if (color > 8) {
-								color = 8;
-							}
-							color = colors[color];
-							continue;
+							color = chooseColor(x[i].dropoffs + x[i].dropoff_passengers, avg);
+							break;
 						}
 					}
 					map.data.overrideStyle(feature, {fillColor: color});
 				});
-			} else if (dataset == 'price') {
-				avgPrices = 0;
-				count = 0;
+			} else if (checked == 'fel') {
+				for (i = 0; i < x.length; i++) {
+					if (x[i].FELONIES > 0) {
+						count++;
+						avg += x[i].FELONIES;
+					}
+				}
+				avg /= count;
+				map.data.forEach(function(feature) {
+					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							color = chooseColor(x[i].FELONIES, avg);
+							break;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
+				});
+			} else if (checked == 'misd') {
+				for (i = 0; i < x.length; i++) {
+					if (x[i].MISDEMEANORS > 0) {
+						count++;
+						avg += x[i].MISDEMEANORS;
+					}
+				}
+				avg /= count;
+				map.data.forEach(function(feature) {
+					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							color = chooseColor(x[i].MISDEMEANORS, avg);
+							break;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
+				});
+			} else if (checked == 'viol') {
+				for (i = 0; i < x.length; i++) {
+					if (x[i].VIOLATIONS > 0) {
+						count++;
+						avg += x[i].VIOLATIONS;
+					}
+				}
+				avg /= count;
+				map.data.forEach(function(feature) {
+					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
+					for (i = 0; i < x.length; i++) {
+						if (currentZip == x[i].zipcode) {
+							color = chooseColor(x[i].VIOLATIONS, avg);
+							break;
+						}
+					}
+					map.data.overrideStyle(feature, {fillColor: color});
+				});
+			} else if (checked == 'price') {
 				for (i = 0; i < x.length; i++) {
 					if (x[i].price > 0) {
 						count++;
-						avgPrices += x[i].price;
+						avg += x[i].price;
 					}
 				}
-				avgPrices /= count;
+				avg /= count;
 				map.data.forEach(function(feature) {
 					currentZip = feature.getProperty('postalCode');
+					color = '#555555';
 					for (i = 0; i < x.length; i++) {
 						if (currentZip == x[i].zipcode) {
-							pls = (x[i].price / avgPrices);
-							color = Math.floor((pls*100)/25);
-							if (color > 8) {
-								color = 8;
-							}
-							color = colors[color];
-							continue;
+							color = chooseColor(x[i].price, avg);
+							break;
 						}
 					}
 					map.data.overrideStyle(feature, {fillColor: color});
 				});;
 			}
+		}
+		function createPost() {
+			console.log("create post is working!") // sanity check
+			$.ajax({
+				url : "/", // the endpoint
+				type : "POST", // http method
+				data : { m : $('#months').attr('value'),
+						 y : $('#years').attr('value')}, // data sent with the post request
+				
+				success : function(json) {
+					$('#results').html(json.m);
+					console.log(json); // log the returned json to the console
+					console.log("success"); // another sanity check
+				},
+				error : function(xhr,errmsg,err) {
+					$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+					" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+					console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+				}
+			});
+		};
+		function chooseColor(num, average) {
+			pls = (num / average);
+			color = Math.floor((pls*100)/25);
+			if (color > 8) {
+				color = 8;
+			}
+			color = colors[color];
+			return color;
 		}
 	</script>
 </head>
@@ -118,11 +225,9 @@
 	var years = ['2010', '2011', '2012', '2013', '2014', '2015'];
 	var rangeSlider = function(){
 		var slider = $('.range-slider'),
-			range = $('.range-slider__range'),
-			value = $('.range-slider__value');
-
-			slider.each(function(){
-
+		range = $('.range-slider__range'),
+		value = $('.range-slider__value');
+		slider.each(function() {
 			value.each(function(){
 				var value = $(this).prev().attr('value');
 				$(this).html(convertToDate(value));
@@ -130,6 +235,8 @@
 
 			range.on('input', function(){
 				$(this).next(value).html(convertToDate(this.value));
+				dataSwitch(checked);
+				updateInfo();
 			});
 		});
 	};
@@ -139,7 +246,55 @@
 		y = Math.floor(value/12);
 		return months[m] + ', ' + years[y];
 	}
-	rangeSlider();
+	
+	function fillLegend() {
+		leg = $("#legendContent");
+		for(i=0; i < colors.length; i++) {
+			leg.append("<div style='display:inline-block;width:20px;height:20px;background-color:" + colors[i] + "'></div>"); 
+		}
+	}
+	
+	$(function() {
+		function getCookie(name) {
+			var cookieValue = null;
+			if (document.cookie && document.cookie != '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = jQuery.trim(cookies[i]);
+					if (cookie.substring(0, name.length + 1) == (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+
+		function csrfSafeMethod(method) {
+			return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		function sameOrigin(url) {
+			var host = document.location.host; // host + port
+			var protocol = document.location.protocol;
+			var sr_origin = '//' + host;
+			var origin = protocol + sr_origin;
+			return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+				(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+				!(/^(\/\/|http:|https:).*/.test(url));
+		}
+
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		});
+
+	});
+		rangeSlider();
+	fillLegend();
 	</script>
 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcfIo7u2qWM0pChurT7cnW9-D9Qi9exnk&callback=initMap" type="text/javascript"></script>
 </body>
