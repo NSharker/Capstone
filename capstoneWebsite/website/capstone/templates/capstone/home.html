@@ -9,50 +9,65 @@
 	</span>
 	
 </div>
-
 <div id = "slider">
+	<div>
+		<form id = "stuff" method="post" onSubmit = "return createPost()")>
+			{% csrf_token %}
+			<input type="number" id="months" name="month" value = "2" min="1" max="12"/>
+			<input type="number" id="years" name="year" value = "2016" min="2016" max="2020"/>
+			<div onclick="createPost()">Sign up</div>
+		</form>
+		<div id="results"> </div>
+	</div>	
 	<div id = "container">
 		<form id="datasets">
 			<span class="checkbox switcher">
-			<span class="name"> Pickups </span>
+			<nobr><span class="name"> Pickups</span>
 			<label for="test">
 				<input type="radio" id="test" value="Pickups" name="dataset"  onclick="dataSwitch('pic');" checked>
 				<span><small></small></span>
 			</label>
-			</br>
+			</nobr>
 			
-			<span class="name"> Dropoffs </span>
+			</br>
+			<nobr>
+			<span class="name"> Dropoffs</span>
 			<label for="test2">
 				<input type="radio" id="test2" value="Dropoffs" name="dataset"  onclick="dataSwitch('drop');">
 				<span><small></small></span>
 			</label>
+			</nobr>
 			</br>
-			
-			<span class="name"> Felonies </span>
+			<nobr>
+			<span class="name"> Felonies</span>
 			<label for="test5">
 				<input type="radio" id="test5" value="Felonies" name="dataset" onclick="dataSwitch('fel');">
 				<span><small></small></span>
 			</label>
-			</br>
 			
-			<span class="name"> Misdemeanors </span>
+			</br>
+			<nobr><span class="name"> Misdemeanors</span>
 			<label for="test6">
 				<input type="radio" id="test6" value="Misdemeanors" name="dataset" onclick="dataSwitch('misd');">
 				<span><small></small></span>
 			</label>
+			</nobr>
 			</br>
-			
-			<span class="name"> Violations </span>
+			<nobr><span class="name"> Violations</span>
 			<label for="test7">
 				<input type="radio" id="test7" value="Violations" name="dataset"  onclick="dataSwitch('viol');">
 				<span><small></small></span>
+			
 			</label>
+			</nobr>
 			</br>
-			<span class="name"> Housing Prices </span>
+			<nobr><span class="name"> Prices</span>
 			<label for="test8">
 				<input type="radio" id="test8" value="Prices" name="dataset"  onclick="dataSwitch('price');">
 				<span><small></small></span>
+			
 			</label>
+			</nobr>
 			</br>
 			</span>
 		</form>
@@ -62,15 +77,6 @@
 		  <input class="range-slider__range" type="range" value="0" min="0" max="71">
 		  <span class="range-slider__value">0</span>
 		</div>
-	</div>
-	<div>
-		<form id = "stuff" method="post" onSubmit = "return createPost()")>
-			{% csrf_token %}
-			<input type="number" id="months" name="month" value = "2" min="1" max="12"/>
-			<input type="number" id="years" name="year" value = "2016" min="2016" max="2020"/>
-			<div id="results"> </div>
-			<div onclick="createPost()">Sign up</div>
-		</form>
 	</div>
 </div>
 <div id="map"></div>
