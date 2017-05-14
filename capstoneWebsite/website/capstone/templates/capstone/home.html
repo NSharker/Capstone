@@ -9,16 +9,7 @@
 	</span>
 	
 </div>
-<div id = "slider">
-	<div>
-		<form id = "stuff" method="post" onSubmit = "return createPost()")>
-			{% csrf_token %}
-			<input type="number" id="months" name="month" value = "2" min="1" max="12"/>
-			<input type="number" id="years" name="year" value = "2016" min="2016" max="2020"/>
-			<div onclick="createPost()">Sign up</div>
-		</form>
-		<div id="results"> </div>
-	</div>	
+<div id = "slider">	
 	<div id = "container">
 		<form id="datasets">
 			<span class="checkbox switcher">
@@ -80,7 +71,45 @@
 	</div>
 </div>
 <div id="map"></div>
+<div id="cusBox">
+	
+	<form id = "cusInfo" method="post" onSubmit = "return createPost()")>
+		<div id="hidecus" onclick="$('#cusInfo').css('visibility', 'hidden')">>></div>
+		<div id="cussZ"></div>
+		{% csrf_token %}
+		Date : <span id="cusdate">
+			<input style="width:40px" type="number" id="cusmonths" name="month" value = "1" min="1" max="12"/>
+			<input style="width:60px" type="number" id="cusyears" name="year" value = "2016" min="2016" max="2020"/>
+		</span></br> 
+		Pickups : <span>
+			<input style="width:70px" type="number" id="cusp" name="cusp" value = "0" placeholder = "0"/>
+		</span></br>
+		Pickup Passengers : <span>
+			<input style="width:70px" type="number" id="cuspass" name="cuspass" value = "0" placeholder = "0"/>
+		</span></br>
+		Dropoffs : <span>
+			<input style="width:70px" type="number" id="cusd" name="cusd" value = "0" placeholder = "0"/>
+		</span></br>
+		Dropoff Passengers : <span>
+			<input style="width:70px" type="number" id="cusdpass" name="cusdpass" value = "0" placeholder = "0"/>
+		</span></br>
+		Felonies : <span>
+			<input style="width:70px" type="number" id="cusf" name="cusf" value = "0" placeholder = "0"/>
+		</span></br>
+		Misdemeanors : <span>
+			<input style="width:70px" type="number" id="cusm" name="cusm" value = "0" placeholder = "0"/>
+		</span></br>
+		Violations : <span>
+			<input style="width:70px" type="number" id="cusv" name="cusv" value = "0" placeholder = "0"/>
+		</span></br>
+		Price per sqrt: <span id="cuspr">0</span></br></br>
+		
+		<span id="cuspredictButton" onclick="createCustom()"> Predict </span>
+	</form>;
+</div>
+
 <div id="infobox">
+	<div id="cusButton" onclick="$('#cusInfo').css('visibility', 'visible');"><<</div>
 	<div id="sZ"></div>
 	<div id="info"> Click any of the zip codes to see data for it! </div>
 </div>

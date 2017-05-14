@@ -161,14 +161,14 @@ def predictHousingPrice(month, year, zipcode, pickups=None, pickup_pass=None, dr
 	priceVal = zipcode_regressions["prices_reg"].predict(predict_nd)[0][0]
 	predict_input.append(priceVal)
 	temp = {}
-	temp['pickups'] = predict_input[1]
-	temp['pickup_passengers'] = predict_input[2]
-	temp['dropoffs'] = predict_input[3]
-	temp['dropoff_passengers'] = predict_input[4]
-	temp['FELONIES'] = predict_input[5]
-	temp['MISDEMEANORS'] = predict_input[6]
-	temp['VIOLATIONS'] = predict_input[7]
-	temp['price'] = predict_input[8]
+	temp['pickups'] = int(predict_input[1])
+	temp['pickup_passengers'] = int(predict_input[2])
+	temp['dropoffs'] = int(predict_input[3])
+	temp['dropoff_passengers'] = int(predict_input[4])
+	temp['FELONIES'] = int(predict_input[5])
+	temp['MISDEMEANORS'] = int(predict_input[6])
+	temp['VIOLATIONS'] = int(predict_input[7])
+	temp['price'] = int(predict_input[8])
 	return temp
 
 

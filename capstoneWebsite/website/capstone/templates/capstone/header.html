@@ -34,6 +34,8 @@
  				map.data.overrideStyle(event.feature, {strokeWeight: 3});
 				selectedzC = event.feature.getProperty('postalCode');
 				document.getElementById('sZ').textContent = selectedzC;
+				document.getElementById('cussZ').textContent = selectedzC;
+				$('#cusButton').css('visibility', 'visible');
 				updateInfo();
 				set = event.feature;
 			});
@@ -42,19 +44,27 @@
 		}
 		
 		function updateInfo() {
+			d = $('.range-slider__range').attr('value');
 			x = datas[$('.range-slider__range').attr('value')];
 			found = false;
 			for (i = 0; i < x.length; i++) {
 				if (x[i].zipcode == selectedzC) {
 					document.getElementById('info').innerHTML = 
-						'Pickups : ' + x[i].pickups + '</br>' +
-						'Pickup Passengers : ' + x[i].pickup_passengers + '</br>' +
-						'Dropoffs : ' + x[i].dropoffs + '</br>' +
-						'Dropoff Passengers : ' + x[i].dropoff_passengers + '</br>' +
-						'Felonies : ' + x[i].FELONIES + '</br>' +
-						'Misdemeanors : ' + x[i].MISDEMEANORS + '</br>' +
-						'Violations : ' + x[i].VIOLATIONS + '</br>' +
-						'Price per square foot: ' + x[i].price;
+						'Date : <span id="date">' + convertToDate(d) + '</span></br>' + 
+						'Pickups : <span id="p">' + x[i].pickups + '</span></br>' +
+						'Pickup Passengers : <span id="ppass">' + x[i].pickup_passengers + '</span></br>' +
+						'Dropoffs : <span id="d">' + x[i].dropoffs + '</span></br>' +
+						'Dropoff Passengers : <span id="dpass">' + x[i].dropoff_passengers + '</span></br>' +
+						'Felonies : <span id="f">' + x[i].FELONIES + '</span></br>' +
+						'Misdemeanors : <span id="m">' + x[i].MISDEMEANORS + '</span></br>' +
+						'Violations : <span id="v">' + x[i].VIOLATIONS + '</span></br>' +
+						'Price per sqrt: <span id="pr">' + x[i].price + '</span></br></br>' +
+						'<form id = "stuff" method="post" onSubmit = "return createPost()")>' +
+						"	{% csrf_token %} " +
+						'	<input style="width:40px" type="number" id="months" name="month" value = "1" min="1" max="12"/>' +
+						'	<input style="width:60px" type="number" id="years" name="year" value = "2016" min="2016" max="2020"/>' +
+						'	<span id="predictButton" onclick="createPost()"> Predict </span>' +
+						'</form>';
 					found = true;
 					break;
 				}
@@ -189,18 +199,48 @@
 			$.ajax({
 				url : "/", // the endpoint
 				type : "POST", // http method
-				data : { m : $('#months').attr('value'),
+				data : { cus: false,
+						 m : $('#months').attr('value'),
 						 y : $('#years').attr('value'),
 						 z : selectedzC}, // data sent with the post request
 				
 				success : function(ml) {
-					poop = ml
-					$('#results').html(ml);
-					console.log(ml); // log the returned json to the console
+					$('#date').html(convertToDate(ml.date));
+					$('#p').html(ml.pickups);
+					$('#ppass').html(ml.pickup_passengers);
+					$('#d').html(ml.dropoffs);
+					$('#dpass').html(ml.dropoff_passengers);
+					$('#f').html(ml.FELONIES);
+					$('#m').html(ml.MISDEMEANORS);
+					$('#v').html(ml.VIOLATIONS);
+					$('#pr').html(ml.price);
 				},
 				error : function(xhr,errmsg,err) {
-					$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
-					" <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+					console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+				}
+			});
+		};
+		
+		function createCustom() {
+			$.ajax({
+				url : "/", // the endpoint
+				type : "POST", // http method
+				data : { cus : true,
+						 m : $('#cusmonths').attr('value'),
+						 y : $('#cusyears').attr('value'),
+						 z : selectedzC,
+						 cusp : $('#cusp').attr('value'),
+						 cuspass : $('#cuspass').attr('value'),
+						 cusd : $('#cusd').attr('value'),
+						 cusdpass : $('#cusdpass').attr('value'),
+						 cusf : $('#cusf').attr('value'),
+						 cusm : $('#cusm').attr('value'),
+						 cusv : $('#cusv').attr('value')}, // data sent with the post request
+				
+				success : function(ml) {
+					$('#cuspr').html(ml.price);
+				},
+				error : function(xhr,errmsg,err) {
 					console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
 				}
 			});
@@ -224,7 +264,7 @@
 	// Months 0-11
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	// Months 0-5
-	var years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'];
+	var years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'];
 	var rangeSlider = function(){
 		var slider = $('.range-slider'),
 		range = $('.range-slider__range'),
